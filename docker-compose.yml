@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  shopping-db:
+    image: swarnakalle/cart:db
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 500M
+        reservations:
+          cpus: "0.25"
+          memory: 250M
+    volumes:
+      - myvolume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  shopping-app:
+    image: swarnakalle/cart:app
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 500M
+        reservations:
+          cpus: "0.25"
+          memory: 250M
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    depends_on:
+      - shopping-db
+
+networks:
+  mynetwork:
+    driver: overlay
+
+volumes:
+  myvolume:
